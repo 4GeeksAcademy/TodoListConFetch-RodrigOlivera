@@ -26,25 +26,41 @@ const Home = () => {
 	}
 
 
-	// funcion que traiga todas las tareas
-	const TraesTodos = ()=> {
+	const CrearUsuario = async()=> {
 		try {
-		fetch('https://playground.4geeks.com/apis/fake/todos/user/RodrigoO',{
-			method:"GET",
-			headers: {
-			"Content-Type": "application/json"
-			}
-		})
-		.then((response) => response.json())
-		.then((datos) => {
-			setToodoList(datos)
-		})
+			const response = await fetch('https://playground.4geeks.com/apis/fake/todos/user/RodrigoO',{
+				method:"POST",
+				headers: {
+				"Content-Type": "application/json"
+				},
+				body:JSON.stringify([])
+			})
+			const data = await response.json()
+			console.log(data)
+
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	// funcion que traiga todas las tareas
+	const TraesTodos = async()=> {
+		try {
+			const response = await fetch('https://playground.4geeks.com/apis/fake/todos/user/RodrigoO',{
+				method:"GET",
+				headers: {
+				"Content-Type": "application/json"
+				}
+			})
+			const data = await response.json()
+			setToodoList(data)
 		} catch (error) {
 			console.log(error);
 		}
 	}
 	useEffect(()=> {
 		TraesTodos()
+		CrearUsuario()
 	},[])
 
 	useEffect(()=> {
@@ -53,24 +69,23 @@ const Home = () => {
 		}else {
 			setStateCountTodo(ToodoList.length)
 		}
+		InsertarTodo(ToodoList)
 		
 	},[ToodoList])
 
-
 	// Fetch para crear un nuevo Todo 
-	const InsertarTodo = (lista)=> {
+	const InsertarTodo = async(lista)=> {
 		try {
-			fetch("https://playground.4geeks.com/apis/fake/todos/user/RodrigoO",{
+			const response = await fetch("https://playground.4geeks.com/apis/fake/todos/user/RodrigoO",{
 				method:"PUT",
 				headers: {
 					"Content-Type": "application/json"
 				},
 				body:JSON.stringify(lista)
 			})
-			.then(resp => {
-				console.log(resp.ok); // Será true (verdad) si la respuesta es exitosa.
-				console.log("arriba dice si se inserto o no")
-			})
+			const data = await response.json()
+			console.log(data)
+
 
 		} catch (error) {
 			console.log(error)
@@ -99,6 +114,27 @@ const Home = () => {
 			state:state,
 			ref:ref
 		})
+	}
+
+	const eliminarDesdeServidor = async()=> {
+		try {
+			const response = await fetch('https://playground.4geeks.com/apis/fake/todos/user/RodrigoO',{
+			method:"DELETE",
+			FORMPARAMS: "none",
+			headers: {
+			"Content-Type": "application/json"
+			}})
+
+			const data = await response.json()
+			console.log(data)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const borrarTodo = ()=> {
+		setToodoList(undefined)
+		eliminarDesdeServidor()
 	}
 
 
@@ -132,7 +168,11 @@ const Home = () => {
 
 				</div>
 			</div>
-
+			<div className="row mt-4">
+				<div className="col-6 m-auto d-flex justify-content-center">
+					<div className="button btn btn-light " onClick={borrarTodo}>Borrar Tareas</div>
+				</div>
+			</div>
 		</div>
 	);
 };
